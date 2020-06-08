@@ -17,6 +17,32 @@ class struc_tile:
 #se tile = False, o player pode caminhar sobre ele; é chão
 #se tile = True, não pode caminhar; é parede
 
+# _____ _     _           _       
+#|  _  | |   (_)         | |      
+#| | | | |__  _  ___  ___| |_ ___ 
+#| | | | '_ \| |/ _ \/ __| __/ __|
+#\ \_/ / |_) | |  __/ (__| |_\__ \
+# \___/|_.__/| |\___|\___|\__|___/
+#           _/ |                  
+#          |__/      
+
+class obj_Actor: 
+    def __init__(self, x, y, sprite): #cria o ator e seta as coordenadas dele
+        self.x = x #endereço no mapa
+        self.y = y #endereço no mapa
+        self.sprite = sprite
+
+    def draw(self): #desenha o boneco na tela
+        SURFACE_MAIN.blit(self.sprite, (self.x*constants.LARGURA_CELULA, self.y*constants.ALTURA_CELULA))
+        
+    def move(self, dx, dy): #move o ator
+        #dx = distancia para mover x.  dy = distancia para mover y.
+        #O ator checa aonde está e aonde vai.
+        #vê se para onde ele quer ir é parede ou chão
+        if GAME_MAP[self.x * dx][self.y * dy].block_path == False:
+            self.x += dx
+            self.y += dy
+
 #___  ___            
 #|  \/  |            
 #| .  . | __ _ _ __  
@@ -44,29 +70,27 @@ def map_create():
 #                                   __/ |
 #                                  |___/ 
 
-#DEFINITIONS
-
 def draw_game():
 
     global SURFACE_MAIN
 
-    #clear the surface
+    #limpa a surface
     SURFACE_MAIN.fill(constants.COLOR_DEFAULT_BG)
 
-    #draw the map
+    #desenha o mapa
     draw_map(GAME_MAP)
 
-    #draw the character
-    SURFACE_MAIN.blit(constants.S_PLAYER, (200,200)) #(personagem, tupla onde o boneco se posiciona)
-
-    #TODO update the display
+    #desenha o personagem
+    PLAYER.draw()
+    
+    #atualiza a tela
     pygame.display.flip()
 
 def draw_map(map_to_draw):
 
-    for x in range (0,30):
-        for y in range (0,30):
-            if map_to_draw[x][y].block_path == True:
+    for x in range (0, constants.LARGURA_MAPA):
+        for y in range (0, constants.ALTURA_MAPA):
+            if map_to_draw[x][y].block_path == True: #se verdade, desenhar uma parede aqui
                 #desenha a parede
                 SURFACE_MAIN.blit(constants.S_WALL, (x*constants.LARGURA_CELULA, y*constants.ALTURA_CELULA))
             else:
@@ -86,13 +110,23 @@ def game_main_loop():
 
     while not game_quit:
 
-        #get player input
+        #pega o input do jogador
         events_list = pygame.event.get()
 
-        #process imput
-        for event in events_list:
-            if event.type == pygame.QUIT:
+        #processa o input
+        for event in events_list: #faz o loop de todos os eventos que aconteceram
+            if event.type == pygame.QUIT: # atributo QUIT detecta que alguém fechou a janela do jogo
                 game_quit = True
+
+            if event.type == pygame.KEYDOWN: #detecta a pressão das teclas no teclado
+                if event.key == pygame.K_UP:
+                    PLAYER.move(0, -1)
+                if event.key == pygame.K_DOWN:
+                    PLAYER.move(0, 1)
+                if event.key == pygame.K_LEFT:
+                    PLAYER.move(-1, 0)
+                if event.key == pygame.K_RIGHT:
+                    PLAYER.move(1, 0)
 
         #draw the game
         draw_game()
@@ -104,13 +138,16 @@ def game_main_loop():
 
 def game_initialize():
     #inicia a tela principal do jogo
-    global SURFACE_MAIN, GAME_MAP
+    global SURFACE_MAIN, GAME_MAP, PLAYER
     #inicia pygame
     pygame.init()
     
     SURFACE_MAIN = pygame.display.set_mode( (constants.LARGURA_TELA, constants.ALTURA_TELA) )
 
     GAME_MAP = map_create() # guarda o mapa criado na função do mapa nesta variável
+    # preenche a matriz com valores
+
+    PLAYER = obj_Actor(0, 0, constants.S_PLAYER)
 
 '''
                        .,,uod8B8bou,,.
