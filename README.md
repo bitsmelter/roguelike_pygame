@@ -1,2 +1,2 @@
 # roguelike_pygame
- Roguelike code to be initially submitted at Summer Slow Jams
+ Roguelike game in developement to be submitted in Summer Slow Jams.
