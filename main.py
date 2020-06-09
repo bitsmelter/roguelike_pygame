@@ -11,7 +11,7 @@ import constants
 #/\__/ / |_| |  | |_| | (__| |_| |_| | | |  __/
 #\____/ \__|_|   \__,_|\___|\__|\__,_|_|  \___|
 
-class struc_tile:
+class struc_Tile:
     def __init__(self, block_path):
         self.block_path = block_path
 #se tile = False, o player pode caminhar sobre ele; é chão
@@ -27,10 +27,15 @@ class struc_tile:
 #          |__/      
 
 class obj_Actor: 
-    def __init__(self, x, y, sprite): #cria o ator e seta as coordenadas dele
+    def __init__(self, x, y, name_object, sprite, creature = None): #cria o ator e seta as coordenadas dele
         self.x = x #endereço no mapa
         self.y = y #endereço no mapa
         self.sprite = sprite
+
+        if creature:
+            self.creature = creature
+            creature.owner = self 
+
 
     def draw(self): #desenha o boneco na tela
         SURFACE_MAIN.blit(self.sprite, (self.x*constants.LARGURA_CELULA, self.y*constants.ALTURA_CELULA))
@@ -43,6 +48,24 @@ class obj_Actor:
             self.x += dx
             self.y += dy
 
+# _____                                              _       
+#/  __ \                                            | |      
+#| /  \/ ___  _ __ ___  _ __   ___  _ __   ___ _ __ | |_ ___ 
+#| |    / _ \| '_ ` _ \| '_ \ / _ \| '_ \ / _ \ '_ \| __/ __|
+#| \__/\ (_) | | | | | | |_) | (_) | | | |  __/ | | | |_\__ \
+# \____/\___/|_| |_| |_| .__/ \___/|_| |_|\___|_| |_|\__|___/
+#                      | |                                   
+#                      |_|
+
+class com_Creature:
+    #tem hp, causa dano a outros objetos atacando eles
+    def __init__(self, name_instance, hp = 10):
+        self.name_instance = name_instance
+        self.hp = hp
+#class com_Items:
+
+#class com_Container:
+
 #___  ___            
 #|  \/  |            
 #| .  . | __ _ _ __  
@@ -53,7 +76,7 @@ class obj_Actor:
 #             |_|
 
 def map_create():
-    new_map = [[struc_tile(False) for y in range(0, constants.ALTURA_MAPA)] for x in range(0,constants.LARGURA_MAPA)] 
+    new_map = [[struc_Tile(False) for y in range(0, constants.ALTURA_MAPA)] for x in range(0,constants.LARGURA_MAPA)] 
     #mapa apenas com espaços vaios para teste
 
     new_map [10][10].block_path = True
@@ -80,7 +103,8 @@ def draw_game():
     #desenha o mapa
     draw_map(GAME_MAP)
 
-    #desenha o personagem
+    #desenha o personagem na tela na ordem listada
+    ENEMY.draw()
     PLAYER.draw()
     
     #atualiza a tela
@@ -138,7 +162,7 @@ def game_main_loop():
 
 def game_initialize():
     #inicia a tela principal do jogo
-    global SURFACE_MAIN, GAME_MAP, PLAYER
+    global SURFACE_MAIN, GAME_MAP, PLAYER, ENEMY
     #inicia pygame
     pygame.init()
     
@@ -147,7 +171,11 @@ def game_initialize():
     GAME_MAP = map_create() # guarda o mapa criado na função do mapa nesta variável
     # preenche a matriz com valores
 
-    PLAYER = obj_Actor(0, 0, constants.S_PLAYER)
+    creature_com1 = com_Creature ("almox")
+    PLAYER = obj_Actor(0, 0, "human", constants.S_PLAYER, creature = creature_com)
+
+    creature_com2 = com_Creature ("eggshell")
+    ENEMY = obj_Actor(15, 15, "goblin", constants.S_ENEMY)
 
 '''
                        .,,uod8B8bou,,.

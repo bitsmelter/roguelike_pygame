@@ -21,6 +21,7 @@ CINZA = (100, 100, 100)
 COLOR_DEFAULT_BG = CINZA
 
 #Sprites
-S_PLAYER = pygame.image.load("data/boneco_placeholder.png")
+S_PLAYER = pygame.image.load("data/almox.png")
+S_ENEMY = pygame.image.load("data/goblin.png")
 S_WALL = pygame.image.load("data/parede_placeholder.png")
 S_FLOOR = pygame.image.load("data/chao_placeholder.png")
